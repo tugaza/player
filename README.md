@@ -1,3 +1,3 @@
 # Tugaza backend
 
-contains infrastructure description and player/streamer scripts
+contains infrastructure description and player/streamer application

@@ -1,0 +1,5 @@
+#NAMESPACE=output
+
+function start() {
+    ffmpeg -f alsa -i $RECORD_DEVICE -f ogg -q:a 6  -
+}

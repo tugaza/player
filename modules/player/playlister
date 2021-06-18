@@ -1,0 +1,36 @@
+#NAMESPACE=playlister
+
+dependencies::depends "rabbit/client"
+
+function peek_item() {
+    item=`this::_peek_from_request_queue`
+    if [[ $item == "" ]]; then
+        item=`this::_peek_from_idle_queue`
+    fi
+    echo "$item"
+}
+
+function get_item() {
+    item=`this::_get_from_request_queue`
+    if [[ $item == "" ]]; then
+        item=`this::_get_from_idle_queue`
+    fi
+    echo "$item"
+}
+
+function _get_from_idle_queue() {
+    rabbit_client::get "$IDLE_QUEUE"
+}
+
+function _get_from_request_queue() {
+    rabbit_client::get "$REQUEST_QUEUE"
+}
+
+
+function _peek_from_idle_queue() {
+    rabbit_client::peek "$IDLE_QUEUE"
+}
+
+function _peek_from_request_queue() {
+    rabbit_client::peek "$REQUEST_QUEUE"
+}

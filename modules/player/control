@@ -1,0 +1,40 @@
+#NAMESPACE=player_control
+
+dependencies::depends "rabbit/client"
+
+function player_control(pid) {
+    while kill -0 $pid; do
+        command=`rabbit_client::get $COMMAND_QUEUE`
+	    catpid=`ps ax | grep cat | grep /data/cache | sed -e 's/  //g' | sed -e 's/^ //g' | cut -d\  -f1`
+
+        if [[ $command == "skip-remove" ]]
+        then
+            if [[ `redis-cli -h redis --raw get skipcounter` -gt 5 ]]
+            then
+		        rm `ps ax | grep cat | grep /data/cache | rev | cut -d\  -f7 | rev`
+                kill -9 $catpid
+                kill -9 $pid
+                redis-cli -h redis decrby skipcounter 5
+                redis-cli -h redis decr songcounter
+                sleep 1
+
+	            return 1
+            fi
+        fi
+        if [[ $command == "skip" ]]
+        then
+            if [[ `redis-cli -h redis --raw get skipcounter` -gt 0 ]]
+            then
+                kill -9 $catpid
+                kill -9 $pid
+		        sleep 1
+                redis-cli -h redis decr skipcounter
+
+		        return 0
+            fi
+        fi
+        sleep 0.5
+    done
+
+    return 0
+}

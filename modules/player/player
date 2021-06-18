@@ -1,0 +1,70 @@
+#NAMESPACE=player
+
+dependencies::depends "logs/logger"
+dependencies::depends "util/ytdl"
+dependencies::depends $INPUT_INTERFACE
+dependencies::depends "player/cache"
+dependencies::depends "player/playlister"
+dependencies::depends "rabbit/client"
+
+function main_loop() {
+     while true; this::skip_token_generate; done&
+     while true; this::peek_and_cache; done&
+     while true
+        do
+            item=`playlister::get_item`
+            if [[ $item != "" ]]
+            then
+                echo -e "\033[32mPlaying video $video\033[37;1m"
+                this::play $item&
+                player_pid=$!
+                player_control::player_control $player_pid&
+                player_control_pid=$!
+                wait $player_pid
+                if wait $player_control_pid
+                then
+                    logger::log info "Adding video to idle queue"
+                    rabbit_client publish "$IDLE_QUEUE" "$item"
+                fi
+            else
+                logger::log "error" "Empty playlist!"
+            fi
+    	sleep 2
+    	item=""
+     done
+}
+
+function skip_token_generate {
+    redis-cli -h redis incr skipcounter; sleep 3600
+}
+
+
+function peek_and_cache() {
+    peekNext=`playlister::peek`
+    if [[ $peekNext != "" ]]; then
+        if [[ `echo $peekNext | egrep -v '^cust' -c` -gt 0 ]]
+        then
+            player_cache::cache "$peekNext"
+        fi
+    fi
+    sleep 10
+}
+
+function play(id) {
+    cat /data/current_id > /data/previous_id
+    echo $id > /data/current_id
+
+    stream::refresh_metadata
+    player_cache::get_or_download $item | input::input
+
+    ret=$?
+    if [[ $ret -eq 0 ]]
+    then
+        logger::log info "ffmpeg clean exit"
+    else
+    	cat /volatile/ffout >> /volatile/fffailures
+        logger::log error "ffmpeg exit status $ret"
+    fi
+
+    return $ret
+}

@@ -1,0 +1,13 @@
+#NAMESPACE=rabbit_client
+
+function peek(queuename) {
+    curl -d '{"vhost":"/","name":"'$queuename'","truncate":"50000","ackmode":"ack_requeue_true","encoding":"auto","count":"1"}' -q http://$RABBIT_URL/api/queues/%2f/$queuename/get 2>/dev/null | jq .[].payload | head | tr -d '"'
+}
+
+function get(queuename) {
+    amqp-get -u amqp://$RABBIT_URL -q $queuename
+}
+
+function publish(queuename message) {
+    amqp-publish -u $amqp://$RABBIT_URL -e $queuename -r $queuename -p -b $message
+}
