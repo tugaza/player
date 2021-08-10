@@ -5,26 +5,27 @@ dependencies::depends "util/ytdl"
 dependencies::depends $INPUT_INTERFACE
 dependencies::depends "player/cache"
 dependencies::depends "player/playlister"
-dependencies::depends "rabbit/client"
+dependencies::depends "player/control"
+dependencies::depends "queue/client"
 
 function main_loop() {
-     while true; this::skip_token_generate; done&
-     while true; this::peek_and_cache; done&
+     while true; do this::skip_token_generate; done&
+     while true; do this::peek_and_cache; done&
      while true
-        do
+     do
             item=`playlister::get_item`
             if [[ $item != "" ]]
             then
-                echo -e "\033[32mPlaying video $video\033[37;1m"
+                logger::log "info" "Playing id $item"
                 this::play $item&
                 player_pid=$!
                 player_control::player_control $player_pid&
                 player_control_pid=$!
-                wait $player_pid
+                wait $player_pid #TODO - get return code
                 if wait $player_control_pid
                 then
-                    logger::log info "Adding video to idle queue"
-                    rabbit_client publish "$IDLE_QUEUE" "$item"
+                    logger::log info "Adding $id to idle queue "
+                    playlister::add_to_playlist "$item"
                 fi
             else
                 logger::log "error" "Empty playlist!"

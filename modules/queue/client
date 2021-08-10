@@ -1,0 +1,21 @@
+#NAMESPACE=queue_client
+
+dependencies::depends logs/logger
+
+function peek(queuename) {
+    answer=`redis-cli --raw -h redis LRANGE $queuename 0 0`
+    logger::log "debug" "$queuename peek = $answer"
+    echo $answer
+}
+
+function get(queuename) {
+    answer=`redis-cli --raw -h redis LPOP $queuename`
+    logger::log "debug" "$queuename get = $answer"
+    echo $answer
+
+}
+
+function publish(queuename message) {
+    redis-cli --raw -h redis RPUSH $queuename $message
+    logger::log "debug" "$queuename publish $message"
+}

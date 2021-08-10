@@ -8,10 +8,9 @@ function autoupdate() {
 	while true; do ./youtube-dl -U; sleep 500; done
 }
 
-function download(ytid)
-{
+function download(ytid) {
     if [[ ! -f $YTDL_CACHE_DIR/$ytid ]]; then
-        ./youtube-dl https://www.youtube.com/watch?v=$ytid -x --audio-format "vorbis" --no-playlist --write-thumbnail --write-info-json -o "$CACHE_DIR/$ytid.%(ext)s"
-	    mv $CACHE_DIR/$ytid.ogg /$CACHE_DIR/$ytid
+        ./youtube-dl https://www.youtube.com/watch?v=$ytid -x --audio-format "vorbis" --no-playlist --write-thumbnail --write-info-json -o "$YTDL_CACHE_DIR/$ytid.%(ext)s"
+        mv $YTDL_CACHE_DIR/$ytid.ogg $YTDL_CACHE_DIR/$ytid
     fi
 }

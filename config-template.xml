@@ -158,7 +158,7 @@
         -->
         <!-- The certificate file needs to contain both public and private part.
              Both should be PEM encoded. -->
-        <ssl-certificate>/pki/everything.pem</ssl-certificate>
+        <ssl-certificate>/tmp/everything.pem</ssl-certificate>
     </paths>
 
     <logging>

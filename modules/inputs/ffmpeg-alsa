@@ -1,5 +1,19 @@
 #NAMESPACE=input
 
+dependencies::depends "logs/logger"
+
 function input() {
     ffmpeg -i - -ar 48000 -ac 2 -f alsa $PLAY_DEVICE -vn 2>$STREAM_LOGFILE
+}
+
+function pid() {
+    echo `ps ax | grep "ffmpeg -i - -ar 48000 -ac 2 -f alsa"  | grep -v grep | awk '{print $1}'`
+}
+
+function shutdown() {
+    pid=`this::pid`
+    logger::log debug "killing $pid"
+    kill -9 $pid
+    logger::log debug "waiting for $pid to exit"
+    while kill -0 $pid; do sleep 0.5; done;
 }
