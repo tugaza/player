@@ -1,0 +1,52 @@
+#NAMESPACE=stream
+
+dependencies::depends $OUTPUT_INTERFACE
+dependencies::depends logs/logger
+
+namespaced icecast_pid=-1
+namespaced ezstream_pid=-1
+
+function start() {
+    this::start_icecast
+    this::start_ezstream
+    this::start_watchdog&
+}
+
+function refresh_metadata() {
+    kill -12 ${namespaced ezstream_pid}
+}
+
+function start_ezstream() {
+    logger::log "info" "starting ezstream"
+    output::start | ezstream -c /tmp/ezstream.xml&
+    namespaced ezstream_pid=$!
+    logger::log "info" "ezstream pid ${namespaced ezstream_pid}"
+}
+
+function start_icecast() {
+    logger::log "info" "starting icecast"
+    /usr/bin/icecast2 -c /tmp/config.xml&
+    namespaced icecast_pid=$!
+    logger::log "info" "icecast pid ${namespaced icecast_pid}"
+    sleep 3
+}
+
+function start_watchdog() {
+    while true
+    do
+        kill -0 ${namespaced icecast_pid}
+        if [[ $? != 0 ]]; then
+            logger::log "error" "icecast is dead, restarting icecast and ezstream"
+            this::start_icecast
+            kill -9 $ezstream_pid #because if icecast is dead, then ezstream is dead fo shizzle.
+            this::start_ezstream
+        fi
+
+        kill -0 ${namespaced ezstream_pid}
+        if [[ $? != 0 ]]; then
+            logger::log "error" "ezstream is dead, restarting ezstream"
+            this::start_ezstream
+        fi
+        sleep 0.25
+    done
+}

@@ -1,0 +1,52 @@
+#NAMESPACE=playlister
+
+dependencies::depends "queue/client"
+dependencies::depends "logs/logger"
+
+function peek() {
+    item=`this::_peek_from_request_queue`
+    logger::log "debug" "peek item = $item (request queue $REQUEST_QUEUE)"
+    if [[ $item == "" ]]; then
+        item=`this::_peek_from_idle_queue`
+	logger::log "debug" "peek item = $item (request queue $IDLE_QUEUE)"
+    fi
+    if [[ $item != "" ]]; then
+        echo -e "$item"
+    fi
+}
+
+function add_to_playlist(item) {
+    queue_client::publish "$IDLE_QUEUE" "$item"
+    logger::log "info" "$item added to playlist" 
+}
+
+function get_item() {
+    item=`this::_get_from_request_queue`
+    logger::log "debug" "get item = $item (request queue $REQUEST_QUEUE)"
+
+    if [[ $item == "" ]]; then
+        item=`this::_get_from_idle_queue`
+        logger::log "debug" "get item = $item (request queue $IDLE_QUEUE)"
+
+    fi
+    if [[ $item != "" ]]; then
+        echo -e "$item"
+    fi
+}
+
+function _get_from_idle_queue() {
+    queue_client::get "$IDLE_QUEUE"
+}
+
+function _get_from_request_queue() {
+    queue_client::get "$REQUEST_QUEUE"
+}
+
+
+function _peek_from_idle_queue() {
+    queue_client::peek "$IDLE_QUEUE"
+}
+
+function _peek_from_request_queue() {
+    queue_client::peek "$REQUEST_QUEUE"
+}

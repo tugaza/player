@@ -1,0 +1,24 @@
+#NAMESPACE=logger
+
+function log(loglevel logstring) {
+    case $loglevel in
+        error)
+            echo -e "\033[31;1m$logstring\033[37;1m" >&2
+        ;;
+        warn)
+            echo -e "\033[93;1m$logstring\033[37;1m" >&2
+        ;;
+        info)
+            echo -e "\033[32;1m$logstring\033[37;1m" >&2
+        ;;
+        debug)
+            if [[ $DEBUG_ENABLED -eq 1 ]]; then
+                echo -e "\033[4;32;41m$logstring\033[0m" >&2
+            fi
+        ;;
+        *)
+            echo -e "$logstring" >&2
+        ;;
+    esac
+
+}

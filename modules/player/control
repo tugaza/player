@@ -1,0 +1,35 @@
+#NAMESPACE=player_control
+
+dependencies::depends "queue/client"
+dependencies::depends "logs/logger"
+dependencies::depends $INPUT_INTERFACE
+
+function player_control(pid) {
+    
+    while kill -0 $pid; do
+        command=`queue_client::get $COMMAND_QUEUE`
+        if [[ $command == "skip-remove" ]]
+        then
+            if [[ `redis-cli -h redis --raw get skipcounter` -gt 5 ]]
+            then
+	        rm `ps ax | grep cat | grep $YTDL_CACHE_DIR | rev | cut -d\  -f7 | rev`
+		input::shutdown
+                redis-cli -h redis decrby skipcounter 5
+                redis-cli -h redis decr songcounter
+	        return 1
+            fi
+        fi
+        if [[ $command == "skip" ]]
+        then
+            if [[ `redis-cli -h redis --raw get skipcounter` -gt 0 ]]
+            then
+		input::shutdown
+                redis-cli -h redis decr skipcounter
+	        return 0
+            fi
+        fi
+        sleep 0.5
+    done
+
+    return 0
+}

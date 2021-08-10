@@ -1,0 +1,22 @@
+#NAMESPACE=player_cache
+
+dependencies::depends "util/ytdl"
+
+function get_or_download(item) {
+    this::cache $item
+    if [[ -f $YTDL_CACHE_DIR/$item ]]
+    then
+	ffmpeg -i $YTDL_CACHE_DIR/$item 2>&1 | grep "Duration" > /data/current_meta
+        cat $YTDL_CACHE_DIR/$item
+    fi
+}
+
+function cache(item) {
+    if [[ -f $YTDL_CACHE_DIR/$item ]]
+    then
+	    logger::log info "cache exists ($item)"
+    else
+    	    logger::log warn "$item does not exist, attempting download"
+	    util_ytdl::download "$item"
+    fi
+}
