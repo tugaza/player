@@ -17,14 +17,8 @@ ERROR_NOT_FOUND=101
 ERROR_BAD_PROGRAMMER=1
 ERROR_BAD_USER=2
 
-if [[ -z $QUEUE_SERVER ]]; then
-    RABBIT_URL=rabbits:rabbits@rabbits:15672
-else
-    RABBIT_URL=$QUEUE_SERVER
-fi
-
 IDLE_QUEUE="idle-queue"
-REQUEST_QUEUE="youtube-download-list"
+REQUEST_QUEUE="youtube-playlist-queue"
 COMMAND_QUEUE="command-queue"
 
 INPUT_INTERFACE="inputs/ffmpeg-alsa"
@@ -33,3 +27,4 @@ OUTPUT_INTERFACE="outputs/ffmpeg-alsa"
 
 STREAM_LOGFILE=/volatile/ffout
 YTDL_CACHE_DIR=/data/cache
+DEBUG_ENABLED=1
