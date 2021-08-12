@@ -1,3 +1,4 @@
 docker-compose.yml
 pki
 data
+vars/environment.sh
