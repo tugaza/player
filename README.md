@@ -1,3 +1,3 @@
-# Tugaza backend
+# Tugaza backend (player)
 
-contains infrastructure description and player/streamer application
+contains player/streamer application
