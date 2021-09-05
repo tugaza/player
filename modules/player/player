@@ -24,7 +24,6 @@ function main_loop() {
                 wait $player_pid #TODO - get return code
                 if wait $player_control_pid
                 then
-                    logger::log info "Adding $id to idle queue "
                     playlister::add_to_playlist "$item"
                 fi
             else
@@ -63,7 +62,7 @@ function play(id) {
     then
         logger::log info "ffmpeg clean exit"
     else
-    	cat /volatile/ffout >> /volatile/fffailures
+    	cat /volatile/ffout > /volatile/fffailures
         logger::log error "ffmpeg exit status $ret"
     fi
 
