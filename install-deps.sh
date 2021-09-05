@@ -11,3 +11,5 @@ fi
 
 dependencies::depends "logs/logger"
 dependencies::depends "queue/client"
+dependencies::depends "timeslots/timeslots"
+dependencies::depends "player/playlister"
