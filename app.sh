@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DIR=`dirname "${BASH_SOURCE[0]}"`
+DIR=$(dirname "${BASH_SOURCE[0]}")
 if [[ -f $DIR/bootstrap.sh ]]
 then
-    . $DIR/bootstrap.sh
+    . "$DIR"/bootstrap.sh
 else
     echo "bootstrap not found"
     exit 256
@@ -14,8 +14,8 @@ then
     cat /pki/certificate.pem /pki/privatekey.pem > /tmp/everything.pem
 fi
 
-bootstrap_load_module $INPUT_INTERFACE
-bootstrap_load_module $OUTPUT_INTERFACE
+bootstrap_load_module "$INPUT_INTERFACE"
+bootstrap_load_module "$OUTPUT_INTERFACE"
 bootstrap_load_module util/ytdl
 bootstrap_load_module player/player
 bootstrap_load_module stream/stream
