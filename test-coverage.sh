@@ -1,10 +1,10 @@
 #!/bin/bash
 
-DIR=`dirname "${BASH_SOURCE[0]}"`
+DIR=$(dirname "${BASH_SOURCE[0]}")
 
 if [[ -f $DIR/bootstrap.sh ]]
 then
-    . $DIR/bootstrap.sh
+    . "$DIR"/bootstrap.sh
 else
     echo "bootstrap not found"
     exit 256

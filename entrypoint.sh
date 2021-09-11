@@ -12,11 +12,11 @@ cp -f ezstream.xml /tmp/ezstream.xml
 # REQUIRED ENVVARS
 for required in SOURCE_PASSWORD RELAY_PASSWORD ADMIN_USERNAME ADMIN_PASSWORD QUEUE_SERVER PLAY_DEVICE RECORD_DEVICE
 do
-    if [[ `eval "if [[ -z "'$'"$required ]]; then echo 'no'; else echo 'yes'; fi"` == 'no' ]]
+    if [[ $(eval "if [[ -z "'$'"$required ]]; then echo 'no'; else echo 'yes'; fi") == 'no' ]]
     then
         exit_required_envvar $required
     else
-	val=`eval "echo "'$'"$required"`
+	val=$(eval "echo "'$'"$required")
         sed -i "s/__${required}__/$val/g" /tmp/config.xml    
         sed -i "s/__${required}__/$val/g" /tmp/ezstream.xml
     fi
