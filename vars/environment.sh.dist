@@ -21,8 +21,8 @@ IDLE_QUEUE="idle-queue"
 REQUEST_QUEUE="request-queue"
 COMMAND_QUEUE="command-queue"
 
-INPUT_INTERFACE="inputs/ffmpeg-alsa"
-OUTPUT_INTERFACE="outputs/ffmpeg-alsa"
+INPUT_INTERFACE="inputs/ffmpeg-unixsocket"
+OUTPUT_INTERFACE="outputs/ffmpeg-unixsocket"
 
 STREAM_LOGFILE=/volatile/ffout
 YTDL_CACHE_DIR=/data/cache

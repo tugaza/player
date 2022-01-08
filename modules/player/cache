@@ -19,7 +19,8 @@ function cache(item) {
 	    if [[ `echo $peekNext | egrep -v '^cust' -c` -gt 0 ]]
         then
     	    logger::log warn "$item does not exist, attempting download"
-	        util_ytdl::download "$item"
+	        util_ytdl::download "$item" >&2
+	        return
     	fi
         logger::log info "$item is a custom file"
     fi
