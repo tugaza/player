@@ -24,4 +24,6 @@ util_ytdl::start_autoupdate
 
 stream::start
 
+trap "player::shutdown" SIGINT
+
 player::main_loop
