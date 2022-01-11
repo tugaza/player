@@ -10,7 +10,7 @@ cp -f config-template.xml /tmp/config.xml
 cp -f ezstream.xml /tmp/ezstream.xml
 
 # REQUIRED ENVVARS
-for required in SOURCE_PASSWORD RELAY_PASSWORD ADMIN_USERNAME ADMIN_PASSWORD QUEUE_SERVER
+for required in SOURCE_PASSWORD RELAY_PASSWORD ADMIN_USERNAME ADMIN_PASSWORD
 do
     if [[ `eval "if [[ -z "'$'"$required ]]; then echo 'no'; else echo 'yes'; fi"` == 'no' ]]
     then
